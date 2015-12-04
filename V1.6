@@ -1,0 +1,291 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<string.h>
+
+
+typedef struct ship {
+	char shiptype[20]; // e.g. Aircraft Carrier
+	int shipsize; // e.q. 5
+	int *X_Location; // Dynamically allocated array of length shipsize
+	int *Y_Location; // Dynamically allocated array of length shipsize
+	int *X_Hit; // Dynamically allocated array of length shipsize
+	int *Y_Hit; // Dynamically allocated array of length shipsize
+	struct ship *pt; // pointer to next ship on the list
+} ship;
+
+//prints the major grid
+void print_Major(ship *lists) {
+	int i, j;
+	char c = 'P';
+	char p;
+	printf("      A       B       C       D       E       F       G       H       I       J       \n");
+	while (lists != NULL) {
+		
+		for (i = 1; i < 11; i++) {
+			for (j = 1; j < 11; j++) {
+				p = letter(lists);
+				printf("%c ", p);
+			}
+			printf("\n");
+		}
+		lists = lists->pt;
+	}
+	for (i = 1; i < 11; i++) {
+		if (i == 10) {
+			printf("  ---------------------------------------------------------------------------------\n");
+			printf("  |       |       |       |       |       |       |       |       |       |       |\n");
+			printf("%d|   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |\n", i, c, c, c, c, c, c, c, c, c, c);
+			printf("  |       |       |       |       |       |       |       |       |       |       |\n");
+
+		}
+		else {
+			printf("  ---------------------------------------------------------------------------------\n");
+			printf("  |       |       |       |       |       |       |       |       |       |       |\n");
+			printf(" %d|   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |   %c   |\n", i, c, c, c, c, c, c, c, c, c, c);
+			printf("  |       |       |       |       |       |       |       |       |       |       |\n");
+
+		}
+	}
+	printf("  ---------------------------------------------------------------------------------\n");
+
+}
+
+// chooses char to display on major grid
+int letter(ship *list) {
+	char q = 'q';
+
+	if (strcmp("Aircraft Carrier", list->shiptype) == 0 || strcmp("AircraftCarrier", list->shiptype)==0) {
+		q = 'A';
+	}
+	else if (strcmp("Battleship", list->shiptype) == 0) {
+		q = 'B';
+	}
+	else if (strcmp("Crusier", list->shiptype) == 0) {
+		q = 'C';
+	}
+	else if (strcmp("Submarine", list->shiptype) == 0) {
+		q = 'S';
+	}
+	else if (strcmp("Patrol Boat", list->shiptype) == 0) {
+		q = 'P';
+	}
+	else if (strcmp("Kayak", list->shiptype) == 0) {
+		q = 'K';
+	}
+	else if (strcmp("Row boat", list->shiptype) == 0) {
+		q = 'R';
+	}
+	return(q);
+}
+
+//prints the minor grid
+void print_Minor(ship *list) {
+	int i = 0;
+	char c = 'P';
+	printf("     A   B   C   D   E   F   G   H   I   J   \n");
+	for (i = 1; i < 11; i++) {
+		if (i == 10) {
+			printf("   -----------------------------------------\n");
+			printf("%d | %c | %c | %c | %c | %c | %c | %c | %c | %c | %c |\n", i, c, c, c, c, c, c, c, c, c, c);
+		}
+		else {
+			printf("   -----------------------------------------\n");
+			printf(" %d | %c | %c | %c | %c | %c | %c | %c | %c | %c | %c |\n", i, c, c, c, c, c, c, c, c, c, c);
+		}
+	}
+	printf("   -----------------------------------------\n");
+}
+
+//prints the score
+void print_Score(char player[], int hit, int miss, int sunk) {
+	printf("%s\n", player);
+	printf("  Hit:	%d\n", hit);
+	printf("  Miss:	%d\n", miss);
+	printf("  Sunk:	%d\n", sunk);
+}
+//checks if the ship place ment location is valid
+int location_check(int x[], int y[], ship *player) {
+	//look at tic-tac-toe/evolve hw for help
+	if (x[0] == 1) {
+		return(1);
+	}
+	else {
+		return(0);
+	}
+}
+
+//randomly chooses computer ship placement
+void comp_place() {
+
+}
+
+//randomly chooses a computer hit location
+void comp_hit() {
+
+}
+
+//Checks the status of a ship
+void ship_Status(int x[], int y[], int xhit[], int yhit[], ship player) {
+
+}
+//reads from file to place ships
+//NEED TO FIGURE OUT HOW TO IMPORT THE POINTER BACK INTO MAIN B/C the VALUE OF THE FIRST ELEMENT IN player TURNS BACK TO NULL
+ship *ship_placement_file(FILE *inp, ship *player, ship *temp, ship *tail) {
+	char line[100];
+	int size = 100;
+	int i;
+	int *t;
+
+	while(fscanf(inp,"%s",line) != EOF){ //reads a line of code and places it into the line string
+		temp = (ship*)malloc(sizeof(ship)); // creation of memory for list
+		strcpy(temp->shiptype,line); // saves ship type to temp.shiptype
+	
+		fscanf(inp, "%d", &temp->shipsize); //moves to the next line and saves ship length to temp.shiptype
+
+		temp->X_Location = (int *)calloc(sizeof(int), temp->shipsize); //dynamically allocates memory for X_Location array based on shipsize
+		temp->Y_Location = (int *)calloc(sizeof(int), temp->shipsize); //dynamically allocates memory for Y_Location array based on shipsize
+		
+		//X_Location
+		t = temp->X_Location; //t points to the memory location of the first element of the X_Location array
+		for (i = 0; i < temp->shipsize; i++) { 
+			fscanf(inp, "%d", t); 
+			t++;
+		}
+		//Y_Location
+		t = temp->Y_Location;
+		for (i = 0; i < temp->shipsize; i++) {
+			fscanf(inp, "%d", t);
+			t++;
+		}
+
+		if (player == NULL) {
+			player = temp; // setting the head of the list
+		}
+		else {
+			tail->pt = temp; // else connecting to previous element
+		}
+		tail = temp; // updating the current element
+		tail->pt = NULL; // setting pointer to null.	
+	}
+	return(player);
+}
+//ship placement by prompting user
+void ship_placement() {
+	ship *player = NULL;
+	ship *temp;
+	ship *tail = NULL;
+
+	int num, i;
+	
+	printf("How many ships is each side given?");
+	scanf("%d", &num);
+
+	for (i = 0; i <= num; i++) {
+		temp = (ship*)malloc(sizeof(ship));
+
+		printf("Please enter the ships type of ship: ");
+		scanf(" %s", temp->shiptype);
+
+		printf("Please enter the ships size: ");
+		scanf("%d", &temp->shipsize);
+
+		printf("Please enter the ships x position: ");
+		for (i = 0; i < temp->shipsize; i++) {
+			scanf("%d", &temp->X_Location[i]);
+		}
+		printf("Please enter the ships y position: ");
+		for (i = 0; i < temp->shipsize; i++) {
+			scanf("%d", &temp->Y_Location[i]);
+		}
+
+		while (location_check(temp->X_Location, temp->Y_Location, temp) == 0) {
+			printf("The ship location is not valid. Please choose a different location.\n");
+
+			printf("Please enter the ships x position: ");
+			for (i = 0; i < temp->shipsize; i++) {
+				scanf("%d", &temp->X_Location[i]);
+			}
+
+			printf("Please enter the ships y position: ");
+			for (i = 0; i < temp->shipsize; i++) {
+				scanf("%d", &temp->Y_Location[i]);
+			}
+		}
+
+		if (player == NULL) {
+			player = temp; //setting the head of the list
+		}
+		else {
+			tail->pt = temp;    //else connecting to previous element
+		}
+		tail = temp;    //updating current element
+		tail->pt = NULL;    //setting pointer to null
+	}
+
+}
+//prints linked list (used for debugging)
+void print_ships(ship *player) { 
+	int i = 0;
+	while (player != NULL) { // traversing the list
+		printf("%s\n", player->shiptype);
+		printf("Ship size is: %d\n", player->shipsize);
+		printf("The ship's coordinates are:\n");
+		for(i = 0; i < player->shipsize; i++) {
+			printf("%d ", player->X_Location[i]);
+		}
+		printf("\n");
+		for (i = 0; i < player->shipsize; i++) {
+			printf("%d ", player->Y_Location[i]);
+		}
+		printf("\n");
+		player = player->pt;
+	}
+}
+int initGrid(int grid[10][10]) {
+	int i, j;
+	for (i = 0; i < 10; i++) {
+		for (j = 0; j < 10; j++) {
+			grid[i][j] = 0;
+		}
+	}
+	return(grid);
+}
+int main(void) {
+	FILE *playerInfo;
+	FILE *compInfo;
+	ship *player = NULL;
+	ship *Comp = NULL;
+	ship *temp = NULL;
+	ship *tail = NULL;
+	char check = 'y';
+	int *MajorGrid[10][10];
+
+	initGrid(MajorGrid);
+
+	printf("Do you wish to import game parameters from a file? (y/n)\n");
+	//scanf(" %c", &check);
+
+	if (check == 'y') {
+		playerInfo = fopen("Battle1_Player.txt", "r");
+		compInfo = fopen("Battle1_Computer.txt", "r");
+
+		if (playerInfo == NULL || compInfo == NULL) {
+			printf("The files could not be located\n");
+		}
+		else {
+			player = ship_placement_file(playerInfo, player, temp, tail);
+			print_ships(player);
+			print_Major(player);
+			fclose(playerInfo);
+			fclose(compInfo);
+		}
+	}
+	else if (check != 'y') {
+		ship_placement();
+		
+	}
+
+	return(0);
+}
